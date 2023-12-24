@@ -30,3 +30,46 @@ func TestMigrator(t *testing.T) {
 }
 
 // gunakan migrator untuk pengetesan, disarankan menggunakan database migration
+
+func TestExecuteSQL(t *testing.T) {
+	t.Run("Exec SQL", func(t *testing.T) {
+		err := db.Exec("insert into sample(id, name) values(?,?)", "1", "Misno").Error
+		assert.Nil(t, err)
+
+		err = db.Exec("insert into sample(id, name) values(?,?)", "2", "Sugianto").Error
+		assert.Nil(t, err)
+
+		err = db.Exec("insert into sample(id, name) values(?,?)", "3", "Anto").Error
+		assert.Nil(t, err)
+
+		err = db.Exec("insert into sample(id, name) values(?,?)", "4", "Knock").Error
+		assert.Nil(t, err)
+	})
+
+	t.Run("RawSQL", func(t *testing.T) {
+		var sample Sample
+		err := db.Raw("select id, name from sample where id = ?", "1").Scan(&sample).Error
+		assert.Nil(t, err)
+		assert.Equal(t, "Misno", sample.Name)
+	})
+
+	t.Run("RawsSQL", func(t *testing.T) {
+		var samples []Sample
+		err := db.Raw("select id, name from sample").Scan(&samples).Error
+
+		assert.Nil(t, err)
+		assert.Equal(t, 4, len(samples))
+	})
+
+	t.Run("ScanRows", func(t *testing.T) {
+		rows, err := db.Raw("select id, name from sample").Rows()
+		assert.Nil(t, err)
+		defer rows.Close()
+
+		var samples []Sample
+		for rows.Next() {
+			db.ScanRows(rows, &samples)
+		}
+		assert.Equal(t, 4, len(samples))
+	})
+}
