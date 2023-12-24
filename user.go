@@ -5,11 +5,17 @@ import "time"
 type User struct {
 	ID        string    `gorm:"primaryKey;column:id;<-:create"`
 	Password  string    `gorm:"column:password"`
-	Name      string    `gorm:"column:name"`
+	Name      Name      `gorm:"embedded"`
 	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime;<-:create"`
-	UpdatedAt time.Time `gorm:"column:updated_at;autoCreateTime;autoUpdateTime;<-:update"`
+	UpdatedAt time.Time `gorm:"column:updated_at;autoCreateTime;autoUpdateTime"`
 }
 
 func (u *User) TableName() string {
 	return "users"
+}
+
+type Name struct {
+	FirstName  string `gorm:"column:first_name"`
+	MiddleName string `gorm:"column:middle_name"`
+	LastName   string `gorm:"column:last_name"`
 }
