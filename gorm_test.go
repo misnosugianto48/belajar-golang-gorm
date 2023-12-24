@@ -7,11 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func OpenConnection() *gorm.DB {
 	dsn := "host=127.0.0.1 user=postgres password=postgres dbname=belajar_golang_gormdb port=5432 sslmode=disable TimeZone=Asia/Jakarta"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -106,5 +109,38 @@ func TestCRUDInterface(t *testing.T) {
 		res := db.Create(&users)
 		assert.Nil(t, res.Error)
 		assert.Equal(t, int64(8), res.RowsAffected)
+	})
+}
+
+func TestTutorial(t *testing.T) {
+	t.Run("Transactions", func(t *testing.T) {
+		err := db.Transaction(func(tx *gorm.DB) error {
+			err := tx.Create(&User{
+				ID:       "10",
+				Password: "secret",
+				Name: Name{
+					FirstName: "Misno",
+				},
+			}).Error
+
+			if err != nil {
+				return err
+			}
+
+			err = tx.Create(&User{
+				ID:       "11",
+				Password: "secret",
+				Name: Name{
+					FirstName: "Anto",
+				},
+			}).Error
+
+			if err != nil {
+				return err
+			}
+
+			return nil
+		})
+		assert.Nil(t, err)
 	})
 }
