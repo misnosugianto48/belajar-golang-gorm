@@ -3,11 +3,11 @@ package belajargolanggorm
 import "time"
 
 type User struct {
-	ID        string    `gorm:"primary_key;column:id"`
+	ID        string    `gorm:"primaryKey;column:id;<-:create"`
 	Password  string    `gorm:"column:password"`
 	Name      string    `gorm:"column:name"`
-	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime"`
-	UpdatedAt time.Time `gorm:"column:updated_at;autoCreateTime;autoUpdateTime"`
+	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime;<-:create"`
+	UpdatedAt time.Time `gorm:"column:updated_at;autoCreateTime;autoUpdateTime;<-:update"`
 }
 
 func (u *User) TableName() string {
