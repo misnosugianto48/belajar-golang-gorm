@@ -23,3 +23,10 @@ var db = OpenConnection()
 func TestOpenConnection(t *testing.T) {
 	assert.NotNil(t, db)
 }
+
+func TestMigrator(t *testing.T) {
+	err := db.Migrator().AutoMigrate(&GuestBook{})
+	assert.Nil(t, err)
+}
+
+// gunakan migrator untuk pengetesan, disarankan menggunakan database migration
